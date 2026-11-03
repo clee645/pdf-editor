@@ -68,7 +68,7 @@ const tools = [
   ["sticky", StickyNote, "Sticky"],
   ["watermark", Stamp, "Watermark"],
 ];
-const colors = ["#293e34", "#222222", "#3264bf", "#b84f43", "#dfb63f"];
+const colors = ["#000000", "#293e34", "#3264bf", "#b84f43", "#dfb63f"];
 const empty = { pages: [], marks: [], values: {} };
 function SignaturePad({ onUse }) {
   const ref = useRef(),
@@ -96,7 +96,7 @@ function SignaturePad({ onUse }) {
             ctx = ref.current.getContext("2d");
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
-          ctx.strokeStyle = "#222";
+          ctx.strokeStyle = "#000000";
           ctx.lineWidth = 2;
           ctx.lineCap = "round";
           setHasInk(true);
@@ -1477,7 +1477,7 @@ function App() {
                               ...t,
                               type: "edit",
                               text: t.text,
-                              color: "#222222",
+                              color: "#000000",
                             })
                           }
                         />

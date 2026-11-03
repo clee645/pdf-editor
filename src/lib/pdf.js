@@ -6,6 +6,7 @@ import {
   PDFName,
   PDFHexString,
   PDFRadioGroup,
+  TextAlignment,
 } from "pdf-lib";
 import * as pdfjs from "pdfjs-dist";
 import worker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
@@ -108,7 +109,7 @@ export async function detectPage(source, pg) {
   return detectFlatFields(canvas, scale, pg.id);
 }
 const color = (c) => {
-  const s = c || "#293e34";
+  const s = c || "#000000";
   return rgb(
     parseInt(s.slice(1, 3), 16) / 255,
     parseInt(s.slice(3, 5), 16) / 255,
@@ -261,6 +262,7 @@ export async function exportPDF(sources, state) {
           textColor: rgb(0, 0, 0),
           rotate: degrees(a),
         });
+        c.setAlignment(TextAlignment.Center);
         c.setFontSize(Math.min(14, Math.max(8, f.h * 0.62)));
       }
       // PDF.js reads the widget's tooltip directly, so retain labels on every widget.
@@ -312,7 +314,13 @@ export async function exportPDF(sources, state) {
         lines.forEach((line, i) =>
           drawText(
             line,
-            m.x + (m.type === "sticky" ? 5 : 0),
+            m.x +
+              ((m.w || 200) -
+                (m.type === "signature" ? italic : font).widthOfTextAtSize(
+                  line,
+                  m.size || 16,
+                )) /
+                2,
             m.y + i * (m.size || 16) * 1.2,
             m.size,
             { opacity: m.type === "watermark" ? 0.22 : 1 },
@@ -393,7 +401,10 @@ export async function exportPDF(sources, state) {
               .forEach((t, i) =>
                 drawText(
                   t,
-                  m.x + (c * m.w) / m.cols + 4,
+                  m.x +
+                    (c * m.w) / m.cols +
+                    (m.w / m.cols - font.widthOfTextAtSize(t, m.size || 12)) /
+                      2,
                   m.y + (r * m.h) / m.rows + 4 + i * (m.size || 12) * 1.2,
                   m.size || 12,
                 ),

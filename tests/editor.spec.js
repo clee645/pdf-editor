@@ -443,3 +443,57 @@ test("mixed forms detect flat shaded/underlined text and prechecked boxes withou
   }, Array.from(bytes));
   expect(clearedPixels).toBe(0);
 });
+
+test("text and checkmarks default to black, and text is centered in the editor and exported PDF", async ({
+  page,
+}) => {
+  await sample(page);
+  const field = page.getByRole("textbox", { name: "0-Full name", exact: true });
+  await field.fill("Centered name");
+  expect(
+    await field.evaluate((el) => ({
+      align: getComputedStyle(el).textAlign,
+      color: getComputedStyle(el).color,
+    })),
+  ).toEqual({ align: "center", color: "rgb(0, 0, 0)" });
+  await page.getByRole("button", { name: "Text", exact: true }).click();
+  await clickPage(page, 60, 610);
+  const input = page.getByRole("textbox", { name: "Annotation text" });
+  await input.fill("Centered note");
+  expect(await input.evaluate((el) => getComputedStyle(el).textAlign)).toBe(
+    "center",
+  );
+  await page.getByRole("button", { name: "Save text", exact: true }).click();
+  const annotation = page.locator(".annotations foreignObject div").first();
+  expect(
+    await annotation.evaluate((el) => ({
+      align: getComputedStyle(el).textAlign,
+      color: getComputedStyle(el).color,
+    })),
+  ).toEqual({ align: "center", color: "rgb(0, 0, 0)" });
+  await page.getByRole("button", { name: "Check", exact: true }).click();
+  await clickPage(page, 350, 610);
+  await expect(page.locator(".annotations path")).toHaveAttribute(
+    "stroke",
+    "#000000",
+  );
+  const bytes = await download(page),
+    pdf = await PDFDocument.load(bytes),
+    font = await pdf.embedFont(StandardFonts.Helvetica);
+  for (const field of pdf
+    .getForm()
+    .getFields()
+    .filter((f) => f.constructor.name === "PDFTextField"))
+    expect(field.getAlignment()).toBe(1);
+  const x = await page.evaluate(async (data) => {
+    const { pdfjs } = await import("/src/lib/pdf.js");
+    const doc = await pdfjs.getDocument({ data: new Uint8Array(data) }).promise;
+    return (await (await doc.getPage(1)).getTextContent()).items.find(
+      (i) => i.str === "Centered note",
+    ).transform[4];
+  }, Array.from(bytes));
+  expect(x).toBeCloseTo(
+    60 + (240 - font.widthOfTextAtSize("Centered note", 16)) / 2,
+    2,
+  );
+});

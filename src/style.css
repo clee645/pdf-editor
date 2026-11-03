@@ -1124,12 +1124,12 @@ aside {
   top: 6%;
   width: 35%;
   height: 65%;
-  border: solid #25351d;
+  border: solid #000000;
   border-width: 0 2px 2px 0;
   transform: rotate(40deg);
 }
 .form-layer input[type="radio"]:checked {
-  background: radial-gradient(circle, #25351d 0 38%, #fff 42%);
+  background: radial-gradient(circle, #000000 0 38%, #fff 42%);
 }
 .form-layer.inactive {
   pointer-events: none;
@@ -1557,4 +1557,15 @@ aside {
     height: 90px;
     min-height: 90px;
   }
+}
+
+.form-layer input,
+.form-layer textarea,
+.form-layer select {
+  color: #000000;
+  text-align: center;
+  -webkit-text-fill-color: #000000;
+}
+.text-entry textarea {
+  text-align: center;
 }

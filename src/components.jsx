@@ -112,6 +112,7 @@ export function Marks({
                 style={{
                   fontSize: m.size,
                   color: m.color,
+                  textAlign: "center",
                   overflow: "hidden",
                   height: "100%",
                   whiteSpace: "pre-wrap",
@@ -148,6 +149,7 @@ export function Marks({
               style={{
                 fontSize: m.size,
                 color: m.color,
+                textAlign: "center",
                 fontFamily:
                   m.type === "signature"
                     ? "Times New Roman, serif"
@@ -275,7 +277,9 @@ export function Thumbnail({ source, pg, active, marks, values, onClick }) {
                   ) : (
                     <text
                       key={f.id}
-                      x={f.x + 2}
+                      x={f.x + f.w / 2}
+                      textAnchor="middle"
+                      fill="#000000"
                       y={f.y + f.h * 0.7}
                       fontSize={Math.min(14, f.h * 0.6)}
                     >
